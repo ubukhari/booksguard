@@ -1,0 +1,17 @@
+{
+  "name": "booksguard",
+  "description": "booksguard for Claude Code and Cowork: every AI write to QuickBooks or Xero waits for your yes, with a dry-run diff, and a per-client log of what was written and who approved it. Open source, local, no account.",
+  "owner": {
+    "name": "agentwares",
+    "url": "https://github.com/agentwares"
+  },
+  "plugins": [
+    {
+      "name": "booksguard",
+      "source": "./plugins/booksguard",
+      "description": "A PreToolUse hook that holds every create, update, delete, void or send through the QuickBooks and Xero MCP servers (Intuit's, Meridian's, Xero's) and their REST APIs until you approve it in your own message, with the diff, totals and journal balance; reads pass. A skill tells Claude how to present a held write and wait for your answer.",
+      "category": "productivity",
+      "tags": ["quickbooks", "xero", "bookkeeping", "accounting", "approval", "hooks"]
+    }
+  ]
+}

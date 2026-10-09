@@ -1,0 +1,79 @@
+{
+  "name": "booksguard",
+  "version": "0.1.0",
+  "description": "Nothing an AI agent writes to QuickBooks or Xero posts until a person says yes. A pre-tool-use hook for Claude Code, Cowork, Codex and Gemini CLI holds every create, update, delete, void and send through the QuickBooks and Xero MCP servers (Intuit's, Meridian's, Xero's) or their REST APIs, shows a dry-run diff with totals and journal balance, releases it on the person's own message or a terminal approve, and keeps a hash-chained log of what AI wrote, per client. Reads pass. Local; never calls QuickBooks or Xero.",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "booksguard": "./dist/cli.js"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/agentwares/booksguard.git"
+  },
+  "homepage": "https://agentwares-agentguard.vercel.app/books",
+  "bugs": {
+    "url": "https://github.com/agentwares/booksguard/issues"
+  },
+  "keywords": [
+    "quickbooks",
+    "quickbooks-online",
+    "xero",
+    "bookkeeping",
+    "accounting",
+    "mcp",
+    "claude-code",
+    "cowork",
+    "codex",
+    "gemini-cli",
+    "hooks",
+    "approval",
+    "human-in-the-loop",
+    "audit-log",
+    "cli"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src",
+    "test": "vitest run",
+    "record": "BOOKSGUARD_WRITE=1 vitest run src/distribution",
+    "pretest": "pnpm run build:dist",
+    "pretypecheck": "pnpm run build:dist",
+    "format:check": "prettier --check .",
+    "format": "prettier --write .",
+    "build:dist": "tsup"
+  },
+  "dependencies": {
+    "@agentwares/agentguard-core": "^0.1.6"
+  },
+  "packageManager": "pnpm@9.15.9",
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^26.4.1",
+    "eslint": "^10.9.1",
+    "prettier": "^3.9.6",
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.69.0",
+    "vitest": "^4.1.11"
+  }
+}

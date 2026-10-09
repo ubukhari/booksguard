@@ -1,0 +1,110 @@
+$ npx --allow-git=root github:agentwares/booksguard demo
+booksguard demo: synthetic calls through the real hook, in a temporary home.
+Nothing of yours is read or written. Tool names and argument shapes are the public ones.
+
+$ npx --allow-git=root github:agentwares/booksguard install --client claude
+added   Claude Code PreToolUse hook in ~/.claude/settings.json
+        matcher ^mcp__|^(Bash|PowerShell|Write|Edit|MultiEdit|NotebookEdit)$
+
+14:01  person  types: Bill Acme Landscaping for October: 10 hours of bookkeeping, invoice 1042.
+
+14:02  agent   mcp__quickbooks__search_customers  (a read)
+        hook    passes (no output: the harness decides as usual)
+
+14:03  agent   mcp__quickbooks__create_invoice  (Intuit's server)
+        hook    deny
+                  + customer_ref: "58"
+                  + doc_number: "1042"
+                  + txn_date: "2026-10-09"
+                  + customer_memo: "Thank you for your business."
+                  + line 1: 1,250.00 · item_ref "12" · qty 10 · unit_price 125 · description "October bookkeeping, 10 hours"
+                  + line 2: 0.00 · item_ref "19" · qty 1 · unit_price 0 · description "Receipt capture (included)"
+                  = total 1,250.00 across 2 lines
+        person  sees: booksguard held create invoice 1,250.00 · QuickBooks via "quickbooks" (Intuit's QuickBooks Online MCP server) (hold bg_106a5a26). Reply "yes, post it" to approve, or run: npx --allow-git=root github:agentwares/booksguard approve bg_106a5a26
+
+14:04  agent   mcp__quickbooks__create_invoice  (the agent retries before anyone answered)
+        hook    deny
+                  + customer_ref: "58"
+                  + doc_number: "1042"
+                  + txn_date: "2026-10-09"
+                  + customer_memo: "Thank you for your business."
+                  + line 1: 1,250.00 · item_ref "12" · qty 10 · unit_price 125 · description "October bookkeeping, 10 hours"
+                  + line 2: 0.00 · item_ref "19" · qty 1 · unit_price 0 · description "Receipt capture (included)"
+                  = total 1,250.00 across 2 lines
+        person  sees: booksguard held create invoice 1,250.00 · QuickBooks via "quickbooks" (Intuit's QuickBooks Online MCP server) (hold bg_106a5a26). Reply "yes, post it" to approve, or run: npx --allow-git=root github:agentwares/booksguard approve bg_106a5a26
+
+14:04  agent   says: booksguard is holding invoice 1042 for Acme Landscaping, 1,250.00. Shall I post it?
+14:05  person  types: yes, post it
+
+14:06  agent   mcp__quickbooks__create_invoice  (same arguments)
+        hook    allow (a note only)
+        person  sees: booksguard released create invoice 1,250.00 · QuickBooks via "quickbooks" (Intuit's QuickBooks Online MCP server) (hold bg_106a5a26), approved by your message at 14:05 UTC (“yes, post it”).
+
+14:07  agent   mcp__quickbooks__create_invoice  (a retry after a timeout: the official server has no idempotency, #100)
+        hook    deny
+                  + customer_ref: "58"
+                  + doc_number: "1042"
+                  + txn_date: "2026-10-09"
+                  + customer_memo: "Thank you for your business."
+                  + line 1: 1,250.00 · item_ref "12" · qty 10 · unit_price 125 · description "October bookkeeping, 10 hours"
+                  + line 2: 0.00 · item_ref "19" · qty 1 · unit_price 0 · description "Receipt capture (included)"
+                  = total 1,250.00 across 2 lines
+        person  sees: booksguard held create invoice 1,250.00 · QuickBooks via "quickbooks" (Intuit's QuickBooks Online MCP server) (hold bg_0eb85624). DUPLICATE of a write released earlier. Reply "yes, post it" to approve, or run: npx --allow-git=root github:agentwares/booksguard approve bg_0eb85624
+
+14:08  agent   mcp__3f0c2a9e-5b7d-4c11-9e2a-0d6f4b8a1c37__create_journal_entry  (Meridian, under a connector id the harness does not name)
+        hook    deny
+                  + TxnDate: "2026-09-30"
+                  + PrivateNote: "Accrue September rent"
+                  + line 1: debit 2,500.00 · AccountRef Rent (67)
+                  + line 2: credit 2,250.00 · AccountRef Accrued liabilities (33)
+                  = debits 2,500.00, credits 2,250.00: OUT OF BALANCE by 250.00
+        person  sees: booksguard held create journal entry 2,500.00 OUT OF BALANCE · QuickBooks via connector 3f0c2a9e… · company 9130354821 (hold bg_dec9ff82). Reply "yes, post it" to approve, or run: npx --allow-git=root github:agentwares/booksguard approve bg_dec9ff82
+
+14:09  agent   Bash  (Xero's REST API)
+        hook    deny
+                  + Type: "ACCPAY"
+                  + Contact: c-204
+                  + Status: "DRAFT"
+                  + line 1: 1,899.00 · Description "Laptop" · Quantity 1 · UnitAmount 1899 · AccountCode "720"
+                  = total 1,899.00 across 1 line
+        person  sees: booksguard held create bill 1,899.00 · Xero API (api.xero.com) · company 7d1c2a40-1111-4b2b-9c3d-000000000001 (hold bg_66760bac). Reply "yes, post it" to approve, or run: npx --allow-git=root github:agentwares/booksguard approve bg_66760bac
+
+14:10  agent   mcp__quickbooks__delete_invoice
+        hook    deny
+                  - delete invoice 1042
+        person  sees: booksguard held delete invoice 1042 · QuickBooks via "quickbooks" (Intuit's QuickBooks Online MCP server) (hold bg_17a9ecc1). Reply "yes, delete it" to approve, or run: npx --allow-git=root github:agentwares/booksguard approve bg_17a9ecc1
+
+14:10  agent   says: Should I also delete the old draft of invoice 1042?
+14:11  person  types: no, don't delete anything
+
+14:12  agent   mcp__quickbooks__delete_invoice  (the agent tries anyway)
+        hook    deny
+                  - delete invoice 1042
+        person  sees: booksguard held delete invoice 1042 · QuickBooks via "quickbooks" (Intuit's QuickBooks Online MCP server) (hold bg_17a9ecc1). Reply "yes, delete it" to approve, or run: npx --allow-git=root github:agentwares/booksguard approve bg_17a9ecc1
+
+14:13  agent   Bash  (the agent tries to approve its own hold)
+        hook    deny
+        person  sees: booksguard refused booksguard approve: an agent may not run `booksguard approve`: a person approves held writes and removes the hook
+
+14:14  agent   mcp__stripe__create_invoice  (Stripe, not a ledger)
+        hook    passes (no output: the harness decides as usual)
+
+$ npx --allow-git=root github:agentwares/booksguard log
+AI writes to the books, 2026-10, per client
+
+folder acme-landscaping: 3 held, 1 released (1,250.00), 2 still waiting, 1 refused
+  10-09 14:03  held       create invoice 1,250.00 · QuickBooks via "quickbooks" (Intuit's QuickBooks Online MCP server)
+  10-09 14:06  released   create invoice 1,250.00 · QuickBooks via "quickbooks" (Intuit's QuickBooks Online MCP server) — message at 14:05 UTC (“yes, post it”)
+  10-09 14:07  held       create invoice 1,250.00 · QuickBooks via "quickbooks" (Intuit's QuickBooks Online MCP server)
+  10-09 14:10  held       delete invoice 1042 · QuickBooks via "quickbooks" (Intuit's QuickBooks Online MCP server)
+  10-09 14:13  refused    booksguard approve
+
+QuickBooks 9130354821: 1 held, 0 released, 1 still waiting, 0 refused
+  10-09 14:08  held       create journal entry 2,500.00 OUT OF BALANCE · QuickBooks via connector 3f0c2a9e… · company 9130354821
+
+Xero 7d1c2a40-1111-4b2b-9c3d-000000000001: 1 held, 0 released, 1 still waiting, 0 refused
+  10-09 14:09  held       create bill 1,899.00 · Xero API (api.xero.com) · company 7d1c2a40-1111-4b2b-9c3d-000000000001
+
+$ npx --allow-git=root github:agentwares/booksguard verify
+ok: 9 entries, hash chain intact (head f6a022ceb2bd)
+(exit 0)

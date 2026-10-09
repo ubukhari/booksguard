@@ -1,0 +1,18 @@
+{
+  "description": "booksguard: every QuickBooks and Xero write by the agent waits for the person's yes, with a dry-run diff",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "^mcp__|^(Bash|PowerShell|Write|Edit|MultiEdit|NotebookEdit)$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "d=\"${BOOKSGUARD_HOME:-$HOME/.booksguard}\"; f=\"$(cat \"$d/cli-path\" 2>/dev/null)\"; if [ -n \"$f\" ] && [ -f \"$f\" ]; then exec node \"$f\" hook pre-tool-use --client claude; fi; exec npx -y --allow-git=root github:agentwares/booksguard hook pre-tool-use --client claude",
+            "timeout": 60,
+            "statusMessage": "booksguard"
+          }
+        ]
+      }
+    ]
+  }
+}

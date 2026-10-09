@@ -1,0 +1,18 @@
+{
+  "name": "booksguard",
+  "version": "0.1.0",
+  "description": "Nothing an AI writes to QuickBooks or Xero posts until you say yes. A PreToolUse hook holds every create, update, delete, void and send through the QuickBooks and Xero MCP servers and their REST APIs, shows a dry-run diff with totals and journal balance, releases the identical call once on your own message, and keeps a hash-chained log per client on your machine. Reads pass. Runs npx --allow-git=root github:agentwares/booksguard locally; no account, no network of its own, no LLM calls.",
+  "author": {
+    "name": "agentwares",
+    "url": "https://github.com/agentwares"
+  },
+  "homepage": "https://agentwares-agentguard.vercel.app/books",
+  "documentationUrl": "https://github.com/agentwares/booksguard#readme",
+  "repository": "https://github.com/agentwares/booksguard",
+  "privacyPolicyUrl": "https://agentwares-agentguard.vercel.app/privacy",
+  "termsOfServiceUrl": "https://agentwares-agentguard.vercel.app/terms",
+  "supportUrl": "https://github.com/agentwares/booksguard/issues",
+  "license": "MIT",
+  "icon": "./.claude-plugin/icon.png",
+  "keywords": ["quickbooks", "xero", "bookkeeping", "accounting", "approval", "audit-log", "hooks"]
+}
